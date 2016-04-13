@@ -53,6 +53,11 @@ public class PackFile
 		this(Paths.get(path));
 	}
 	
+	public String getName()
+	{
+		return packFilePath.getFileName().toString();
+	}
+	
 	public List<PackObject> getObjects()
 	{
 		return objects;
@@ -61,7 +66,7 @@ public class PackFile
 	
 	private List<PackObject> parseMetaData() throws IOException
 	{
-		List<PackObject> objects = new LinkedList<PackObject>();
+		List<PackObject> objects = new LinkedList<>();
 		
 		// buffer for storing metadata
 		byte[] metadataBytes = new byte[METADATA_LENGTH];

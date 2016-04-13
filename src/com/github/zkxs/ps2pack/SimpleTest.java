@@ -5,6 +5,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple test for the current state of the API.
@@ -18,6 +20,10 @@ public class SimpleTest
 	
 	public static void main(String[] args)
 	{
+		long startTime = System.nanoTime();
+		
+		Map<String, PackFile> packFiles = new HashMap<>();
+		
 		try
 		{
 			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(ASSETS_PATH), p -> {
@@ -28,10 +34,12 @@ public class SimpleTest
 				try
 				{
 					PackFile pf = new PackFile(p);
+					packFiles.put(pf.getName(), pf);
 					//pf.getObjects().forEach(System.out::println);
 				}
 				catch (IOException e)
 				{
+					System.err.printf("Error reading %s\n", p.toString());
 					e.printStackTrace();
 					System.exit(1);
 				}
@@ -39,10 +47,13 @@ public class SimpleTest
 		}
 		catch (IOException e)
 		{
+			System.err.printf("Error enumerating directory %s\n", ASSETS_PATH.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		System.out.println("done");
+		long stopTime = System.nanoTime();
+		
+		System.out.printf("Read all metadata in %.0fms\n", (stopTime - startTime) / 1_000_000d);
 	}
 }
