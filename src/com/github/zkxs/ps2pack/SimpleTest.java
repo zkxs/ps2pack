@@ -1,9 +1,7 @@
 package com.github.zkxs.ps2pack;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,19 +21,22 @@ public class SimpleTest
 		long startTime = System.nanoTime();
 		
 		Map<String, PackFile> packFiles = new HashMap<>();
+		Map<String, PackObject> packObjects = new HashMap<>();
 		
 		try
 		{
-			DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(ASSETS_PATH), p -> {
+			Files.newDirectoryStream(Paths.get(ASSETS_PATH), p -> {
 				String filename = p.getFileName().toString();
 				return filename.startsWith("Assets_") && filename.endsWith(".pack");
-			});
-			ds.forEach(p -> {
+			}).forEach(p -> {
 				try
 				{
 					PackFile pf = new PackFile(p);
 					packFiles.put(pf.getName(), pf);
-					//pf.getObjects().forEach(System.out::println);
+					pf.getObjects().forEach(po -> {
+						PackObject old = packObjects.putIfAbsent(po.getName(), po);
+						if (old != null) throw new RuntimeException("Duplicate pack: " + po.getName());
+					});
 				}
 				catch (IOException e)
 				{
@@ -55,5 +56,12 @@ public class SimpleTest
 		long stopTime = System.nanoTime();
 		
 		System.out.printf("Read all metadata in %.0fms\n", (stopTime - startTime) / 1_000_000d);
+		
+		packObjects.keySet().stream()
+			.filter(s -> s.toLowerCase().endsWith(".jpg"))
+			.forEach(s -> {
+				PackObject po = packObjects.get(s);
+				System.out.printf("%s in %s\n", s, po.getPackFile().getName());
+			});
 	}
 }

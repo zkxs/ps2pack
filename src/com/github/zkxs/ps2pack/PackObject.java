@@ -27,4 +27,44 @@ public class PackObject
 	{
 		return name;
 	}
+
+	/**
+	 * @return the PackFile this PackObject is stored within
+	 */
+	public PackFile getPackFile()
+	{
+		return packFile;
+	}
+
+	/**
+	 * @return the name of this PackObject
+	 */
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * @return the offset of this PackObject within the PackFile it is stored within
+	 */
+	public int getAbsoluteOffset()
+	{
+		return absoluteOffset;
+	}
+
+	/**
+	 * @return The length, in bytes, of this PackObject
+	 */
+	public int getLength()
+	{
+		return length;
+	}
+
+	/**
+	 * @return The CRC32 of this PackObject's bytes
+	 */
+	public int getCrc32()
+	{
+		return crc32;
+	}
 }
